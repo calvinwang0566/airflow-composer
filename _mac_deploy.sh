@@ -1,0 +1,1 @@
+gsutil rsync dags gs://asia-east2-airflow-prod-6c35af45-bucket/dags
