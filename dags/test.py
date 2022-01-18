@@ -1,7 +1,9 @@
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.operators.bash import BashOperator
+from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.utils.dates import days_ago
+from airflow.kubernetes.secret import Secret
 
 default_args = {
     'owner': 'airflow',
@@ -10,6 +12,16 @@ default_args = {
     'retry_delay': timedelta(minutes=3),
 }
 
+secret_volume = Secret(
+    'volume',
+    # Path where we mount the secret as volume
+    '/var/secrets/google',
+    # Name of Kubernetes Secret
+    'service-account',
+    # Key in the form of service account file name
+    'service-account.json'
+)
+
 with DAG(
     dag_id='test',
     default_args=default_args,
@@ -17,9 +29,19 @@ with DAG(
     start_date=days_ago(1),
 ) as dag:
 
-    t1 = BashOperator(
+    t1 = KubernetesPodOperator(
         task_id='t1',
-        bash_command='echo Hello World',
+        name="test_dbt",
+        namespace='default',
+        image_pull_policy='Always',
+        # image='fishtownanalytics/dbt:1.0.0',
+        image='fishtownanalytics/dbt:1.0.0',
+        secrets=[secret_volume],
+        env_vars={'GOOGLE_APPLICATION_CREDENTIALS': '/var/secrets/google/service-account.json'},
+        get_logs=True,
+        cmds=["/bin/sh", "-c"],
+        arguments=['cd / && ls'],
+        is_delete_operator_pod=True,
     )
 
     t1

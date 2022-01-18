@@ -1,6 +1,6 @@
 from airflow import DAG
 from datetime import datetime, timedelta
-from airflow.operators.bash import BashOperator
+from airflow.contrib.operators.bigquery_operator import BigQueryOperator
 from airflow.utils.dates import days_ago
 
 default_args = {
@@ -17,9 +17,17 @@ with DAG(
     start_date=days_ago(1),
 ) as dag:
 
-    t1 = BashOperator(
+    t1 = BigQueryOperator(
         task_id='t1',
-        bash_command='echo Hello World',
+        sql=
+        """
+            SELECT
+                "Success" AS col1 
+        """,
+        destination_dataset_table='wilson_test.airflow_testing',
+        bigquery_conn_id='bigquery_default',
+        write_disposition='WRITE_APPEND',
+        use_legacy_sql=False
     )
 
     t1
