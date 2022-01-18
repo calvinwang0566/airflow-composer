@@ -1,0 +1,10 @@
+data_pipeline:
+  target: loreal_bq
+  outputs:
+    loreal_bq:
+      type: bigquery
+      method: service-account
+      project: loreal-tw
+      dataset: [the name of your dbt dataset]
+      threads: 1
+      keyfile: [/path/to/bigquery/keyfile.json]
