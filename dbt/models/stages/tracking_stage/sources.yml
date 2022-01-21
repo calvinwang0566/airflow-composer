@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: tracking_stage
+    database: 'loreal-tw'
+    schema: 'tracking_stage'
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: ga_hit_LAN

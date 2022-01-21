@@ -4,7 +4,9 @@ data_pipeline:
     loreal_bq:
       type: bigquery
       method: service-account
+      keyfile: /var/secrets/google/service-account.json
+      dataset: wilson_test
       project: loreal-tw
-      dataset: [the name of your dbt dataset]
       threads: 1
-      keyfile: [/path/to/bigquery/keyfile.json]
+      timeout_seconds: 300
+      priority: interactive

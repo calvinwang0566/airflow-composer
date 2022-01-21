@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: wilson_test
+    database: 'loreal-tw'
+    schema: 'wilson_test'
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: dbt_test

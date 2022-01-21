@@ -23,15 +23,15 @@ secret_volume = Secret(
 )
 
 with DAG(
-    dag_id='test',
+    dag_id='Ads_and_Promotion_flow',
     default_args=default_args,
     schedule_interval=None,
     start_date=days_ago(1),
 ) as dag:
 
-    t1 = KubernetesPodOperator(
-        task_id='t1',
-        name="test_dbt",
+    run_dbt = KubernetesPodOperator(
+        task_id='run_dbt',
+        name="Ads_and_Promotion_flow",
         namespace='default',
         image_pull_policy='Always',
         # image='fishtownanalytics/dbt:1.0.0',
@@ -42,10 +42,10 @@ with DAG(
         cmds=["/bin/bash", "-c"],
         arguments=[
             """
-            dbt run --profiles-dir /dbt --models dbt_result --target loreal_bq --fail-fast; ret=$?; exit $ret
+            dbt run --profiles-dir /dbt --models ga_daily_report --target loreal_bq --fail-fast; ret=$?; exit $ret
             """
         ],
         is_delete_operator_pod=True,
     )
 
-    t1
+    run_dbt

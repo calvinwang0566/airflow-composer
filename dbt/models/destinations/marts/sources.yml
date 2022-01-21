@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: marts
+    database: 'loreal-tw'
+    schema: 'marts'
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: ga_hit_all

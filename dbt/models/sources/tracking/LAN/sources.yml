@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: LAN
+    database: 'loreal-tw'
+    schema: '45991883'
+    description: Lancome
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: ga_sessions_*
