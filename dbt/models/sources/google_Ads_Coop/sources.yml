@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: google_Ads_Coop
+    database: 'loreal-tw'
+    schema: 'google_Ads_Coop'
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: p_Campaign_8532601374
+      - name: p_Customer_8532601374
+      - name: p_CampaignStats_8532601374
+      - name: p_CampaignBasicStats_8532601374

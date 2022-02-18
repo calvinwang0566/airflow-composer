@@ -1,6 +1,5 @@
 from airflow import DAG
 from datetime import datetime, timedelta
-from airflow.operators.bash import BashOperator
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.utils.dates import days_ago
 from airflow.kubernetes.secret import Secret
@@ -23,15 +22,15 @@ secret_volume = Secret(
 )
 
 with DAG(
-    dag_id='test',
+    dag_id='custom_mapping',
     default_args=default_args,
     schedule_interval=None,
     start_date=days_ago(1),
 ) as dag:
 
-    t1 = KubernetesPodOperator(
-        task_id='t1',
-        name="test_dbt",
+    run_dbt = KubernetesPodOperator(
+        task_id='run_dbt',
+        name="custom_mapping",
         namespace='default',
         image_pull_policy='Always',
         # image='fishtownanalytics/dbt:1.0.0',
@@ -42,10 +41,10 @@ with DAG(
         cmds=["/bin/bash", "-c"],
         arguments=[
             """
-            dbt run --profiles-dir /dbt --models dbt_result --target loreal_bq --fail-fast; ret=$?; exit $ret
+            dbt seed --profiles-dir /dbt --target loreal_bq; ret=$?; exit $ret
             """
         ],
         is_delete_operator_pod=True,
     )
 
-    t1
+    run_dbt

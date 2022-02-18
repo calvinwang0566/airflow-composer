@@ -16,6 +16,6 @@ SELECT
   CAST(ROUND(SUM(totals.totalTransactionRevenue / 1000000 / totals.hits), 0) AS INTEGER) AS revenue,
   COUNT(DISTINCT CONCAT(sessionId, '-', hit.eventInfo.eventCategory, '-', COALESCE(hit.eventinfo.eventaction), '-', COALESCE(hit.eventinfo.eventlabel))) AS unique_events,
   ROUND(SAFE_DIVIDE(SUM(totals.transactions / totals.hits), COUNT(DISTINCT CASE WHEN totals.visits = 1 THEN sessionId END)), 4) AS ecommerce_conversion_rate
-FROM {{ source('marts', 'ga_hit_all') }}
+FROM {{ ref('ga_hit_all') }}
 GROUP BY brand, date 
 ORDER BY brand, date

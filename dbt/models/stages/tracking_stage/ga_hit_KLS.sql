@@ -60,12 +60,12 @@ final AS (
             hit.eventInfo,
             hit.experiment
         ) AS hit
-    FROM {{ source('tracking_LAN', 'ga_sessions_*') }},
+    FROM {{ source('tracking_KLS', 'ga_sessions_*') }},
     UNNEST(hits) AS hit
     WHERE 1=1
 )
 SELECT
-    '01' AS brand,
+    '45' AS brand,
     FIRST_VALUE(marsId IGNORE NULLS) OVER (PARTITION BY fullVisitorId ORDER BY visitNumber, hit.hitNumber ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING) AS marsId,
     * EXCEPT(marsId)
 FROM final 

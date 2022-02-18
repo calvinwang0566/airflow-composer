@@ -1,10 +1,10 @@
 version: 2
 
 sources:
-  - name: tracking_LAN
+  - name: tracking_KLS
     database: 'loreal-tw'
-    schema: '45991883'
-    description: Lancome
+    schema: '59637441'
+    description: Kiehl's
 
     quoting:
       database: true

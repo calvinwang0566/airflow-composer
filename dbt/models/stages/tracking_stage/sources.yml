@@ -9,6 +9,3 @@ sources:
       database: true
       schema: true
       identifier: true
-
-    tables:
-      - name: ga_hit_LAN

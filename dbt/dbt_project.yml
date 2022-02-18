@@ -6,6 +6,7 @@ profile: 'data_pipeline'
 
 model-paths: ["models"]
 macro-paths: ["macros"]
+seed-paths: ["seeds"]
 
 target-path: "target"
 
@@ -23,9 +24,6 @@ models:
             wilson_test:
                 schema: wilson_test
                 materialized: view
-            LAN:
-                schema: 45991883
-                materialized: view
         stages:
             tracking_stage:
                 schema: tracking_stage
@@ -37,3 +35,10 @@ models:
             Ads_and_Promotion:
                 schema: Ads_and_Promotion
                 materialized: view
+seeds:
+    data_pipeline:
+        schema: custom_mapping
+        utm_medium_mapping:
+            column_types:
+                utm_medium: STRING
+                mapping_type: STRING

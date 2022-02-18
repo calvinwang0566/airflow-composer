@@ -12,3 +12,4 @@ sources:
 
     tables:
       - name: ga_hit_all
+      - name: gtrend

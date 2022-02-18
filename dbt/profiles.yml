@@ -9,4 +9,14 @@ data_pipeline:
       project: loreal-tw
       threads: 1
       timeout_seconds: 300
+      location: US
+      priority: interactive
+    dev:
+      type: bigquery
+      method: oauth
+      project: loreal-tw
+      dataset: wilson_test
+      threads: 1
+      timeout_seconds: 300
+      location: US
       priority: interactive
