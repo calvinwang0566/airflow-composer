@@ -62,12 +62,12 @@ final AS (
             hit.eventInfo,
             hit.experiment
         ) AS hit
-    FROM {{ source('tracking_KLS', 'ga_sessions_*') }},
+    FROM {{ source('tracking_YSL', 'ga_sessions_*') }},
     UNNEST(hits) AS hit
     WHERE 1=1
 )
 SELECT
-    '45' AS brand,
+    '51' AS brand,
     LAST_VALUE(marsId IGNORE NULLS) OVER (PARTITION BY fullVisitorId ORDER BY visitNumber, hit.hitNumber ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS marsId,
     * EXCEPT(marsId)
 FROM final 

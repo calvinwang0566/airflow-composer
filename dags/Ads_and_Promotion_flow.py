@@ -41,7 +41,7 @@ with DAG(
         cmds=["/bin/bash", "-c"],
         arguments=[
             """
-            dbt run --profiles-dir /dbt --models ga_daily_report google_ads_daily_report --target loreal_bq --fail-fast; ret=$?; exit $ret
+            dbt run --profiles-dir /dbt --models ga_daily_report +google_ads_daily_report_combined --target loreal_bq --fail-fast; ret=$?; exit $ret
             """
         ],
         is_delete_operator_pod=True,

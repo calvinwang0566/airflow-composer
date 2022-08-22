@@ -9,9 +9,9 @@ ga AS (
     brand,
     marsId,
     visitStartDateTime,
-    fullVisitorId,
+    CASE WHEN marsId IS NOT NULL THEN LAST_VALUE(fullVisitorId) OVER (PARTITION BY marsId ORDER BY visitStartDateTime ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) ELSE fullVisitorId END AS fullVisitorId,
     sessionId,
-    isNewVisit,
+    CASE WHEN DENSE_RANK() OVER (PARTITION BY marsId ORDER BY DATE(visitStartDateTime)) = 1 THEN TRUE ELSE FALSE END AS isNewVisit,
     channelGrouping,
     IFNULL(mapping_type, 'others') AS mediumGrouping,
     hit.isInteraction AS hit_isInteraction,
@@ -24,13 +24,13 @@ ga AS (
   LEFT JOIN {{ ref('utm_medium_mapping') }}
   ON LOWER(trafficSource.medium) = utm_medium
   WHERE 1=1
-    AND marsId IS NOT NULL
     AND totals.visits = 1
 ),
 final AS (
     SELECT
     brand,
     marsId,
+    fullVisitorId,
     DATE(visitStartDateTime) AS date,
     LOGICAL_OR(isNewVisit) AS isNewVisit,
     COUNT(DISTINCT sessionId) AS sessions,
@@ -79,11 +79,15 @@ final AS (
     COUNT(DISTINCT IF(hit_eventCategory = 'Ecommerce' AND hit_eventAction = 'Add to Cart', sessionId, NULL)) AS event_add_to_cart_sessions,
     COUNT(DISTINCT IF(hit_eventCategory = 'ecommerce' AND hit_eventAction = 'add to favorites', sessionId, NULL)) AS event_add_to_favorite_sessions,
     COUNT(DISTINCT IF(hit_eventCategory = 'Ecommerce' AND hit_eventAction = 'Checkout', sessionId, NULL)) AS event_checkout_sessions,
+    COUNT(DISTINCT IF(hit_eventCategory = 'Ecommerce' AND hit_eventAction = 'Purchase', sessionId, NULL)) AS event_purchase_sessions,
     COUNT(DISTINCT IF(hit_eventCategory = 'Video' AND hit_eventAction = 'Play', sessionId, NULL)) AS event_video_play_sessions,
     COUNT(DISTINCT IF(hit_eventCategory = 'store locator' AND hit_eventAction = 'find a store', sessionId, NULL)) AS event_find_store_sessions,
-    COUNT(DISTINCT IF(hit_eventCategory = 'internal search' AND hit_eventAction = 'display', sessionId, NULL)) AS event_internal_search_sessions
+    COUNT(DISTINCT IF(hit_eventCategory = 'internal search' AND hit_eventAction = 'display', sessionId, NULL)) AS event_internal_search_sessions,
+    COUNT(DISTINCT IF(hit_eventCategory LIKE '%virtual try on%', sessionId, NULL)) AS event_virtual_try_on_sessions,
+    COUNT(DISTINCT IF(hit_eventCategory LIKE '%analysis::skindr%', sessionId, NULL)) AS event_analysis_skindr_sessions,
+    COUNT(DISTINCT IF(LOWER(hit_eventCategory) LIKE '%shade-finder%', sessionId, NULL)) AS event_shade_finder_sessions
     FROM ga
-    GROUP BY 1, 2, 3
+    GROUP BY 1, 2, 3, 4
 )
 SELECT
     *

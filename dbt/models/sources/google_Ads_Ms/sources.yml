@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: google_Ads_Ms
+    database: 'loreal-tw'
+    schema: 'google_Ads_Ms'
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: p_Campaign_7806077362
+      - name: p_Customer_7806077362
+      - name: p_CampaignStats_7806077362
+      - name: p_CampaignBasicStats_7806077362
+      - name: p_CampaignCookieStats_7806077362

@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: tracking_SHU
+    database: 'loreal-tw'
+    schema: '53987172'
+    description: Shu
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: ga_sessions_*

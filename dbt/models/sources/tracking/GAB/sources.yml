@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: tracking_GAB
+    database: 'loreal-tw'
+    schema: '90741859'
+    description: Giorgio Armani
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: ga_sessions_*

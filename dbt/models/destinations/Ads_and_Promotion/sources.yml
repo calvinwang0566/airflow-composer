@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: Ads_and_Promotion
+    database: 'loreal-tw'
+    schema: 'Ads_and_Promotion'
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: google_ads_daily_report_history

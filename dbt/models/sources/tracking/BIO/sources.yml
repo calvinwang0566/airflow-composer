@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: tracking_BIO
+    database: 'loreal-tw'
+    schema: '35631871'
+    description: Biotherm
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: ga_sessions_*

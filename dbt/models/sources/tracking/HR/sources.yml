@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: tracking_HR
+    database: 'loreal-tw'
+    schema: '202708931'
+    description: Helena Rubinstein
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: ga_sessions_*

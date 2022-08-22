@@ -15,3 +15,4 @@ sources:
       - name: p_Customer_8532601374
       - name: p_CampaignStats_8532601374
       - name: p_CampaignBasicStats_8532601374
+      - name: p_CampaignCookieStats_8532601374

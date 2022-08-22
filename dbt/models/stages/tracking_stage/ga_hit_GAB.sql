@@ -6,7 +6,10 @@
 WITH 
 final AS (
     SELECT
-        (SELECT value FROM UNNEST(hit.customDimensions) AS customDimension WHERE customDimension.index = 178) AS marsId,
+        IFNULL(
+            (SELECT value FROM UNNEST(hit.customDimensions) AS customDimension WHERE customDimension.index = 182),
+            (SELECT value FROM UNNEST(hit.customDimensions) AS customDimension WHERE customDimension.index = 178)
+        ) AS marsId,
         CONCAT(date, '-', fullvisitorId, '-', CAST(visitId AS STRING)) AS sessionId,
         fullVisitorId,
         visitId,
@@ -62,12 +65,12 @@ final AS (
             hit.eventInfo,
             hit.experiment
         ) AS hit
-    FROM {{ source('tracking_KLS', 'ga_sessions_*') }},
+    FROM {{ source('tracking_GAB', 'ga_sessions_*') }},
     UNNEST(hits) AS hit
     WHERE 1=1
 )
 SELECT
-    '45' AS brand,
+    '16' AS brand,
     LAST_VALUE(marsId IGNORE NULLS) OVER (PARTITION BY fullVisitorId ORDER BY visitNumber, hit.hitNumber ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS marsId,
     * EXCEPT(marsId)
 FROM final 

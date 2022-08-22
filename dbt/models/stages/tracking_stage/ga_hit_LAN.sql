@@ -7,7 +7,7 @@ WITH
 final AS (
     SELECT
         (SELECT value FROM UNNEST(hit.customDimensions) AS customDimension WHERE customDimension.index = 178) AS marsId,
-        CONCAT(date, '-', fullvisitorId, '-', CAST(visitId AS string)) AS sessionId,
+        CONCAT(date, '-', fullvisitorId, '-', CAST(visitId AS STRING)) AS sessionId,
         fullVisitorId,
         visitId,
         visitNumber,
@@ -57,6 +57,8 @@ final AS (
             hit.isExit,
             hit.referer,
             hit.page,
+            hit.product,
+            hit.contentGroup,
             hit.eventInfo,
             hit.experiment
         ) AS hit
@@ -66,6 +68,6 @@ final AS (
 )
 SELECT
     '01' AS brand,
-    FIRST_VALUE(marsId IGNORE NULLS) OVER (PARTITION BY fullVisitorId ORDER BY visitNumber, hit.hitNumber ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING) AS marsId,
+    LAST_VALUE(marsId IGNORE NULLS) OVER (PARTITION BY fullVisitorId ORDER BY visitNumber, hit.hitNumber ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS marsId,
     * EXCEPT(marsId)
 FROM final 

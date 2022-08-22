@@ -50,6 +50,7 @@ with DAG(
             {"keyword":"YSL","is_luxe":True},
             {"keyword":"亞曼尼","is_luxe":True},
             {"keyword":"Armani","is_luxe":True},
+            {"keyword":"Giorgio Armani","is_luxe":True},
             {"keyword":"碧兒泉","is_luxe":True},
             {"keyword":"Biotherm","is_luxe":True},
             {"keyword":"赫蓮娜","is_luxe":True},
