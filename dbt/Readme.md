@@ -1,14 +1,30 @@
 # 建置步驟
 ## 使用terminal切到
+```
 cd ./dbt
+```
 
-## virtualenv is needed
+## 安裝virtualenv
+```
 pip install virtualenv
+```
 
 ## 使用virtual python env
-virtualenv --python=python3.9 dbt-env          # create the environment
-dbt-env\Scripts\activate         # activate the environment
-pip install dbt-bigquery==1.0.0     # install dbt
+### create the environment
+由於dbt 1.0與python 3.10不相容，因此需要指定venv的python版本
+若電腦沒有python 3.9，則需要額外安裝
+```
+virtualenv --python=python3.9 dbt-env
+```
+### activate the environment
+```
+dbt-env\Scripts\activate
+```
+
+### install dbt
+```
+pip install dbt-bigquery==1.0.0
+```
 
 ## local build需要gcloud權限
 ```
