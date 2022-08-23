@@ -2,19 +2,18 @@
 ## 使用terminal切到
 cd ./dbt
 
+## virtualenv is needed
+pip install virtualenv
+
 ## 使用virtual python env
-python3 -m venv dbt-env             # create the environment
-source dbt-env/bin/activate         # activate the environment
+virtualenv --python=python3.9 dbt-env          # create the environment
+dbt-env\Scripts\activate         # activate the environment
 pip install dbt-bigquery==1.0.0     # install dbt
 
 ## local build需要gcloud權限
 ```
-gcloud auth application-default login \
-  --scopes=https://www.googleapis.com/auth/bigquery,\
-https://www.googleapis.com/auth/drive.readonly,\
-https://www.googleapis.com/auth/iam.test
+gcloud auth application-default login
 ```
-- 可參考:https://docs.getdbt.com/reference/warehouse-profiles/bigquery-profile#local-oauth-gcloud-setup
 
 ## generate doc
 ```
