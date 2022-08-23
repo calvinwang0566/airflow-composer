@@ -36,12 +36,12 @@ gcloud auth application-default login
 dbt docs generate --profiles-dir . --target dev
 ```
 
-# serve doc
+## serve doc
 ```
 dbt docs serve --profiles-dir . --target dev
 ```
 
-# run dbt
+## run dbt
 ```
 dbt run --profiles-dir . --models ga_hit_all --target dev
 ```
