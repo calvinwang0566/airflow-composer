@@ -1,0 +1,35 @@
+version: 2
+
+sources:
+  - name: beacon_api
+    database: 'loreal-tw'
+    schema: 'marts'
+    tests: 
+      - unique:
+          column_name: "event_name || '-' ||receiver_uid || '-' ||event_type|| '-' ||event_time"
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true
+
+    tables:
+      - name: beacon_api
+        columns:
+          - name: event_name
+            tests:
+              - not_null
+          - name: receiver_uid
+            tests:
+              - dbt_expectations.expect_column_value_lengths_to_equal:
+                  value: 33
+              - not_null
+          - name: event_type
+            tests: 
+              - accepted_values
+                  values: ['enter', 'push', 'banner']
+          - name: brand_id
+            tests:
+              - not_null
+              - accepted_values
+                  values: ['01', '07', '15', '16', '40', '45', '51']

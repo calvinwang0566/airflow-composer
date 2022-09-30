@@ -3,8 +3,8 @@
 cd ./dbt
 
 ## 使用virtual python env
-python3 -m venv dbt-env             # create the environment
-source dbt-env/bin/activate         # activate the environment
+python -m venv dbt-env             # create the environment
+dbt-env\\Scripts\\activate         # activate the environment
 pip install dbt-bigquery==1.0.0     # install dbt
 
 ## local build需要gcloud權限
@@ -37,4 +37,4 @@ dbt run --profiles-dir . --models ga_hit_all --target dev
 
 ## 在airflow上使用dbt的方式
 - 使用KubernetesPodOperator pull dbt image(包含source code，然後直接在image裡面執行dbt run 
-- 為了達成這個目的，就必須在更改dbt版本的時候build一個新的image並且在airflow_utils.py裡面調整 ocker pull的image
+- 為了達成這個目的，就必須在更改dbt版本的時候build一個新的image並且在airflow_utils.py裡面調整 docker pull的image

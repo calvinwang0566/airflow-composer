@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: beacon_stage
+    database: 'loreal-tw'
+    schema: 'beacon_stage'
+
+    quoting:
+      database: true
+      schema: true
+      identifier: true

@@ -24,9 +24,15 @@ models:
             wilson_test:
                 schema: wilson_test
                 materialized: view
+            Beacon:
+                schema: Beacon
+                materialized: view  
         stages:
             tracking_stage:
                 schema: tracking_stage
+                materialized: view
+            beacon_stage:
+                schema: beacon_stage
                 materialized: view
         destinations:
             marts:

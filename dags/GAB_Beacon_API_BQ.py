@@ -15,10 +15,11 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.email import EmailOperator
 
 
-url = 'https://giorgioarmanibeautybcqa.lorealluxe.com.tw'
+url = 'https://giorgioarmanibeautybc.lorealluxe.com.tw'
 get_token_url = '/api/Beacon/getToken'
 get_trigger_record_url = '/api/Beacon/getTriggerRecord'
 
+date_yesterday = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
 
 default_args = {
     'owner': 'airflow',
@@ -62,14 +63,31 @@ def generate_signature(url, headers=None, json=None, **context):
     return signature
 
 
+def get_pagination(url, headers=None, json=None, **context):
+    headers['X-Coolbe-Signature'] = context['task_instance'].xcom_pull(task_ids='yes_generate_signature')
+    _, request_json = request_post(url, headers, json)
+    page_count = request_json['data'][0]['pagination']['page_count']
+
+    print(f'Page count: {page_count}')
+
+    return page_count
+
+
 def get_trigger_record_to_csv(url, headers=None, json=None, **context):
     headers['X-Coolbe-Signature'] = context['task_instance'].xcom_pull(task_ids='yes_generate_signature')
-    print('Headers: {}'.format(headers))
-    _, request_json = request_post(url, headers, json)
+    page_count = context['task_instance'].xcom_pull(task_ids='get_pagination')
+
+    data_list = []
+    for page in range(page_count):
+        json['page'] = page + 1
+        _, request_json = request_post(url, headers, json)
     
-    request_dataframe = pd.json_normalize(request_json['data'][0]['records'])
-    csv_file_path = 'beacon_get_trigger.csv'
-    request_dataframe.to_csv(csv_file_path, index=False, encoding='utf_8_sig')
+        request_dataframe = pd.json_normalize(request_json['data'][0]['records'])
+        data_list.append(request_dataframe)
+
+    data = pd.concat(data_list, axis=0)
+    csv_file_path = 'GAB_beacon_get_trigger.csv'
+    data.to_csv(csv_file_path, index=False, encoding='utf_8_sig')
 
 
 
@@ -77,13 +95,11 @@ def data_to_gcs(**context):
     gcs_hook = GoogleCloudStorageHook(gcp_conn_id='bigquery_default')
     gcs_hook.upload(
             bucket_name='airflow_data_lake', 
-            object_name='beacon_get_trigger.csv', 
-            filename='beacon_get_trigger.csv'
+            object_name='GAB_beacon_get_trigger.csv', 
+            filename='GAB_beacon_get_trigger.csv'
         )
 
-# r = requests.get('https://storage.cloud.google.com/asia-east2-airflow-prod-6c35af45-bucket/dags/config/beacon_api_bq_schema.json')
-# data = r.json()
-# schema = data['schema']
+
 schema = [
     {"mode": "NULLABLE",
      "name": "event_name",
@@ -116,7 +132,7 @@ schema = [
 
 print(schema)
 
-with DAG(dag_id='beacon_api_data_connection', 
+with DAG(dag_id='GAB_beacon_api_data_connection', 
          default_args=default_args,
          schedule_interval='@daily',
          start_date=days_ago(1)) as dag:
@@ -137,15 +153,26 @@ with DAG(dag_id='beacon_api_data_connection',
                      'json': {"secret": "b99a7c32f9ce7d6a8fd3353499dc3759"}}
     )
 
+    get_pagination_flow = PythonOperator(
+        task_id = 'get_pagination',
+        python_callable = get_pagination,
+        op_kwargs = {'url': url+get_trigger_record_url,
+                     'headers': {"Content-Type": "application/json"},
+                     'json': {"page": "1",
+                              "page_size": "1000",
+                              "date_start_at": date_yesterday,
+                              "date_end_at": date_yesterday}}
+    )
+
     get_trigger_record_to_csv_flow = PythonOperator(
         task_id = 'get_trigger_record_to_csv',
         python_callable = get_trigger_record_to_csv,
         op_kwargs = {'url': url+get_trigger_record_url,
                      'headers': {"Content-Type": "application/json"},
                      'json': {"page": "1",
-                              "page_size": "100",
-                              "date_start_at": "2022-01-01",
-                              "date_end_at": ""}}
+                              "page_size": "1000",
+                              "date_start_at": date_yesterday,
+                              "date_end_at": date_yesterday}}
     )
 
     data_to_gcs_flow = PythonOperator(
@@ -156,13 +183,13 @@ with DAG(dag_id='beacon_api_data_connection',
     gcs_to_bq_flow = GoogleCloudStorageToBigQueryOperator(
         task_id = 'gcs_to_bq',
         bucket = 'airflow_data_lake',
-        source_objects = ['beacon_get_trigger.csv'],
+        source_objects = ['GAB_beacon_get_trigger.csv'],
         source_format = 'CSV',
         skip_leading_rows = 1,
         allow_quoted_newlines = True,
         schema_fields = schema,
         destination_project_dataset_table = 'marts.beacon_api',
-        write_disposition = 'WRITE_TRUNCATE',
+        write_disposition = 'WRITE_APPEND',
         bigquery_conn_id = 'bigquery_default'
     )
 
@@ -171,4 +198,4 @@ with DAG(dag_id='beacon_api_data_connection',
 
 check_request_status_flow >> [generate_signature_flow, do_nothing]
 
-generate_signature_flow >> get_trigger_record_to_csv_flow >> data_to_gcs_flow >> gcs_to_bq_flow
+generate_signature_flow >> get_pagination_flow >> get_trigger_record_to_csv_flow >> data_to_gcs_flow >> gcs_to_bq_flow
